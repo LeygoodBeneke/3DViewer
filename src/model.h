@@ -42,7 +42,7 @@ private:
 
 class Model : public Observer {
 public:
-    Model(s21::DataObj data, s21::Transform transform, PositionModelSettings* take_settings) : _data(data), _transform(transform) {};
+    Model(s21::DataObj data, s21::Transform transform) : _data(data), _transform(transform) {};
 
     DrawModel();
 
@@ -150,36 +150,6 @@ private:
     static double _ribs_style;
     static int _back_colour;
 };
-
-// class Higth {
-// public:
-//     Higth(int cur_higth_style);
-
-//     void SetHigthStyle(int cur_style);
-//     void SetColor();
-//     void SetSize();
-
-//     void CreateHigth();
-// private:
-//     int _color;
-//     double _size;
-//     int _current_higth_style;
-// };
-
-// class Ribs {
-// public:
-//     Ribs(int cur_rib_style);
-    
-//     void SetRibsStyle(int cur_style );
-//     void SetColor();
-//     void SetThick();
-//     void CreateRibs();
-
-// private:
-//     int color_;
-//     double thick_;
-//     int current_ribs_show_;
-// };
 
 
 #endif
