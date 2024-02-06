@@ -33,6 +33,7 @@ class Parser {
   ~Parser();
   void setStrategy(Read *read);
   bool ReadFile(std::string name_file, DataObj *data_model);
+  bool ReadDataFile(std::string &file_name);
 
  private:
   Read *read_;

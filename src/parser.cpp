@@ -124,4 +124,17 @@ bool Parser::ReadFile(std::string name_file, DataObj *data_model) {
   bool flag = read_->Search(name_file, data_model);
   return flag;
 }
+
+bool Parser::ReadDataFile(std::string &file_name) {
+  Clear();
+  bool flag = true;
+  parcer_ = new Parser(new ReadOne);
+  if (parcer_->ReadFile(file_name, object_)) {
+    parcer_->setStrategy(new ReadTwo);
+    flag = parcer_->ReadFile(file_name, object_);
+  } else
+    flag = false;
+  return flag;
+}
+
 }  // namespace s21
