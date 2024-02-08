@@ -23,10 +23,9 @@ void GLWidget::resizeGL(int width, int height) {
 
 void GLWidget::paintGL() {
   // glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
   // glClearColor(background.redF(), background.greenF(), background.blueF(), 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+  glLoadIdentity();
   // glLoadIdentity();
   // if (projection_type == ProjectionType::CENTRAL) {
   //   gluPerspective(70.0, 1.5, 0.1, 50);
@@ -60,16 +59,15 @@ void GLWidget::paintGL() {
   // }
 
   glBegin(GL_POINTS);
-  int loc_counter = 0;
+  // int loc_counter = 0;
   if(model != nullptr) {
-    for (unsigned int i = 0; i < model->GetDataP()->count_vertex; i++) {
+    for (unsigned int i = 0; i < model->GetDataP()->count_vertex * 3; i += 3) {
       // glColor3f(vertices_color.redF(), vertices_color.greenF(),
       //           vertices_color.blueF());
-      double test = pos_settings->GetScale();
       glVertex3f(
-          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale() + pos_settings->GetPosX(),
-          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale() + pos_settings->GetPosY(),
-          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale() + pos_settings->GetPosZ()
+          model->GetDataP()->vertexes[i] * pos_settings->GetScale() + pos_settings->GetPosX(),
+          model->GetDataP()->vertexes[i + 1] * pos_settings->GetScale() + pos_settings->GetPosY(),
+          model->GetDataP()->vertexes[i + 2] * pos_settings->GetScale() + pos_settings->GetPosZ()
       );
       // glVertex3f(
       //     current_point_array[i].x * scale + position_x,
@@ -87,17 +85,17 @@ void GLWidget::paintGL() {
   // glLineStipple(3, 0xDDDD);
 
   // glLineWidth(line_width);
+
   glBegin(GL_LINES);
   // glColor3f(edges_color.redF(), edges_color.greenF(), edges_color.blueF());
   // loc_counter = 0;
   if (model != nullptr) {
-    for (unsigned int i = 0; i < model->GetDataP()->count_facets;) {
+    for (unsigned int i = 0; i < model->GetDataP()->count_facets * 2; ++i) {
         glVertex3f(
-          model->GetDataP()->vertexes[model->GetDataP()->facets[i]] * pos_settings->GetScale() + pos_settings->GetPosX(),
-          model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 1] * pos_settings->GetScale() + pos_settings->GetPosY(), 
-          model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 2] * pos_settings->GetScale() + pos_settings->GetPosZ()
+          model->GetDataP()->vertexes[model->GetDataP()->facets[i] * 3] * pos_settings->GetScale() + pos_settings->GetPosX(),
+          model->GetDataP()->vertexes[model->GetDataP()->facets[i] * 3 + 1] * pos_settings->GetScale() + pos_settings->GetPosY(), 
+          model->GetDataP()->vertexes[model->GetDataP()->facets[i] * 3 + 2] * pos_settings->GetScale() + pos_settings->GetPosZ()
         );
-        i++;
         // glVertex3f(
         //   model->GetDataP()->vertexes[model->GetDataP()->facets[i]] * pos_settings->GetScale(),
         //   model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 1] * pos_settings->GetScale(), 
