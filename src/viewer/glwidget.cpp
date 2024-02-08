@@ -22,6 +22,8 @@ void GLWidget::resizeGL(int width, int height) {
 }
 
 void GLWidget::paintGL() {
+  // glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
   // glClearColor(background.redF(), background.greenF(), background.blueF(), 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -65,9 +67,9 @@ void GLWidget::paintGL() {
       //           vertices_color.blueF());
       double test = pos_settings->GetScale();
       glVertex3f(
-          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale(),
-          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale(),
-          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale()
+          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale() + pos_settings->GetPosX(),
+          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale() + pos_settings->GetPosY(),
+          model->GetDataP()->vertexes[loc_counter++] * pos_settings->GetScale() + pos_settings->GetPosZ()
       );
       // glVertex3f(
       //     current_point_array[i].x * scale + position_x,
@@ -86,22 +88,22 @@ void GLWidget::paintGL() {
 
   // glLineWidth(line_width);
   glBegin(GL_LINES);
-
   // glColor3f(edges_color.redF(), edges_color.greenF(), edges_color.blueF());
-  loc_counter = 0;
+  // loc_counter = 0;
   if (model != nullptr) {
-    for (unsigned int i = 0; i < model->GetDataP()->count_edges; i++) {
+    for (unsigned int i = 0; i < model->GetDataP()->count_facets;) {
         glVertex3f(
-          model->GetDataP()->vertexes[model->GetDataP()->facets[loc_counter * 3]] * pos_settings->GetScale(),
-          model->GetDataP()->vertexes[model->GetDataP()->facets[loc_counter * 3 + 1]] * pos_settings->GetScale(), 
-          model->GetDataP()->vertexes[model->GetDataP()->facets[loc_counter * 3 + 2]] * pos_settings->GetScale()
+          model->GetDataP()->vertexes[model->GetDataP()->facets[i]] * pos_settings->GetScale() + pos_settings->GetPosX(),
+          model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 1] * pos_settings->GetScale() + pos_settings->GetPosY(), 
+          model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 2] * pos_settings->GetScale() + pos_settings->GetPosZ()
         );
-        loc_counter++;
-        glVertex3f(
-          model->GetDataP()->vertexes[model->GetDataP()->facets[loc_counter * 3]] * pos_settings->GetScale(),
-          model->GetDataP()->vertexes[model->GetDataP()->facets[loc_counter * 3 + 1]] * pos_settings->GetScale(), 
-          model->GetDataP()->vertexes[model->GetDataP()->facets[loc_counter * 3 + 2]] * pos_settings->GetScale()
-        );
+        i++;
+        // glVertex3f(
+        //   model->GetDataP()->vertexes[model->GetDataP()->facets[i]] * pos_settings->GetScale(),
+        //   model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 1] * pos_settings->GetScale(), 
+        //   model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 2] * pos_settings->GetScale()
+        // );
+        // loc_counter++;
 
       // glVertex3f(current_point_array[line_array[i].a - 1].x * scale + position_x,
       //            current_point_array[line_array[i].a - 1].y * scale + position_y,
@@ -236,6 +238,6 @@ void GLWidget::on_position_z_spinbox_valueChanged(double arg1) {
 }
 
 void GLWidget::on_model_scale_slider_valueChanged(int arg1) {
-  pos_settings->SetScale(arg1/100.0);
+  pos_settings->SetScale(arg1/10.0);
   update();
 }
