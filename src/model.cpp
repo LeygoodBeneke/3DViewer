@@ -3,6 +3,7 @@
 
 #include <string>
 #include "obj_data.h"
+#include "transformation.h"
 #include <list>
 
 namespace s21 {
@@ -57,19 +58,24 @@ public:
     double GetPosZ() {return _z_val;};
 
     double GetScale() {return _scale;};
+
+    int GetAxis() {return _axis;};
     
     void SetAngleX(double x) {
         _x_angle = x;
+        _axis = kX;
         Notify();
     };
 
     void SetAngleY(double y) {
         _y_angle = y;
+        _axis = kY;
         Notify();
     };
 
     void SetAngleZ(double z) {
         _z_angle = z;
+        _axis = kZ;
         Notify();
     };
 
@@ -102,6 +108,7 @@ private:
     double _z_angle;
 
     double _scale;
+    int _axis;
 };
 
 class Model : public Observer {
@@ -121,13 +128,22 @@ public:
         _transform.prev_coor[2] = settings->GetPosZ();
 
         _transform.value = settings->GetScale();
+        _transform.axis = settings->GetAxis();
     }
 
     void Update() override {
         ChangeMoveVals(dynamic_cast<PositionModelSettings*>(GetSubject())); 
     };
 
-    s21::DataObj* GetDataP() {return &_data;};
+    s21::DataObj GetData() {
+        s21::DataObj ret_data = _data;
+        s21::Transformation t;
+        t.Rotate(ret_data, _transform);
+        t.Scale(ret_data, _transform);
+//        t.Translate(ret_data, _transform);
+
+        return ret_data;
+    };
 
 private:
     s21::DataObj _data;

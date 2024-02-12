@@ -57,22 +57,22 @@ void GLWidget::paintGL() {
   //   rotate_around_axis(&current_point_array[i].x, &current_point_array[i].z,
   //                      current_angle_z);
   // }
+  s21::DataObj cur_data_obj;
+  if(model != nullptr) {
+    cur_data_obj = model->GetData();
+  }
 
   glBegin(GL_POINTS);
   // int loc_counter = 0;
   if(model != nullptr) {
-    for (unsigned int i = 0; i < model->GetDataP()->count_vertex * 3; i += 3) {
+    for (unsigned int i = 0; i < cur_data_obj.count_vertex * 3; i += 3) {
       // glColor3f(vertices_color.redF(), vertices_color.greenF(),
       //           vertices_color.blueF());
       glVertex3f(
-          model->GetDataP()->vertexes[i] * pos_settings->GetScale() + pos_settings->GetPosX(),
-          model->GetDataP()->vertexes[i + 1] * pos_settings->GetScale() + pos_settings->GetPosY(),
-          model->GetDataP()->vertexes[i + 2] * pos_settings->GetScale() + pos_settings->GetPosZ()
+          cur_data_obj.vertexes[i],
+          cur_data_obj.vertexes[i + 1],
+          cur_data_obj.vertexes[i + 2]
       );
-      // glVertex3f(
-      //     current_point_array[i].x * scale + position_x,
-      //     current_point_array[i].y * scale + position_y,
-      //     current_point_array[i].z * scale + position_z);
     }
   }
   glEnd();
@@ -90,27 +90,12 @@ void GLWidget::paintGL() {
   // glColor3f(edges_color.redF(), edges_color.greenF(), edges_color.blueF());
   // loc_counter = 0;
   if (model != nullptr) {
-    for (unsigned int i = 0; i < model->GetDataP()->count_facets * 2; ++i) {
+    for (unsigned int i = 0; i < cur_data_obj.count_facets * 2; ++i) {
         glVertex3f(
-          model->GetDataP()->vertexes[model->GetDataP()->facets[i] * 3] * pos_settings->GetScale() + pos_settings->GetPosX(),
-          model->GetDataP()->vertexes[model->GetDataP()->facets[i] * 3 + 1] * pos_settings->GetScale() + pos_settings->GetPosY(), 
-          model->GetDataP()->vertexes[model->GetDataP()->facets[i] * 3 + 2] * pos_settings->GetScale() + pos_settings->GetPosZ()
+          cur_data_obj.vertexes[cur_data_obj.facets[i] * 3],
+          cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 1], 
+          cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 2]
         );
-        // glVertex3f(
-        //   model->GetDataP()->vertexes[model->GetDataP()->facets[i]] * pos_settings->GetScale(),
-        //   model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 1] * pos_settings->GetScale(), 
-        //   model->GetDataP()->vertexes[model->GetDataP()->facets[i] + 2] * pos_settings->GetScale()
-        // );
-        // loc_counter++;
-
-      // glVertex3f(current_point_array[line_array[i].a - 1].x * scale + position_x,
-      //            current_point_array[line_array[i].a - 1].y * scale + position_y,
-      //            current_point_array[line_array[i].a - 1].z * scale + position_z);
-
-
-      // glVertex3f(current_point_array[line_array[i].b - 1].x * scale + position_x,
-      //            current_point_array[line_array[i].b - 1].y * scale + position_y,
-      //            current_point_array[line_array[i].b - 1].z * scale + position_z);
     }
   }
   glEnd();
@@ -195,6 +180,7 @@ void GLWidget::initialize_model() {
 
   pos_settings->Attach(model); // Error
 
+  
 
   // point gravity_center = {.x = 0, .y = 0, .z = 0};
 
