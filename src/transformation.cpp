@@ -3,74 +3,38 @@
 namespace s21 {
 
 void Transformation::Scale(DataObj &model, Transform &transform) {
-  double scale = 0;
-  double max_vertex = 0;
-  max_vertex =
-      *(std::max_element(model.vertexes.begin(), model.vertexes.end()));
-  if (max_vertex != 0)
-    scale = (transform.value - transform.value * -1) / max_vertex;
   size_t size = model.vertexes.size();
   for (size_t i = 0; i < size; i += 3) {
-    model.vertexes[i] *= scale;
-    model.vertexes[i + 1] *= scale;
-    model.vertexes[i + 2] *= scale;
+    model.vertexes[i] *= transform.value;
+    model.vertexes[i + 1] *= transform.value;
+    model.vertexes[i + 2] *= transform.value;
   }
 }
 
 void Transformation::Translate(DataObj &model, Transform &transform) {
   size_t size = model.vertexes.size();
   for (size_t i = 0; i < size; i += 3) {
-    double tmp = model.vertexes[i + transform.axis];
-    model.vertexes[i + transform.axis] =
-        tmp + transform.value - transform.prev_coor[transform.axis];
+    model.vertexes[i] += transform.prev_coor[0];
+    model.vertexes[i + 1] += transform.prev_coor[1];
+    model.vertexes[i + 2] += transform.prev_coor[2];
   }
-  transform.prev_coor[transform.axis] = transform.value;
 }
 
 void Transformation::Rotate(DataObj &model, Transform &transform) {
-  double angle = GetAngle(transform);
-  double cos_value = cos(angle);
-  double sin_value = sin(angle);
   size_t size = model.vertexes.size();
   for (size_t i = 0; i < size; i += 3) {
-    double temp_x = model.vertexes[i];
     double temp_y = model.vertexes[i + 1];
     double temp_z = model.vertexes[i + 2];
-    if (transform.axis == kX) {
-      model.vertexes[i + 1] = cos_value * temp_y - sin_value * temp_z;
-      model.vertexes[i + 2] = sin_value * temp_y + cos_value * temp_z;
-    } else if (transform.axis == kY) {
-      model.vertexes[i] = cos_value * temp_x - sin_value * temp_z;
-      model.vertexes[i + 2] = sin_value * temp_x + cos_value * temp_z;
-    } else if (transform.axis == kZ) {
-      model.vertexes[i] = cos_value * temp_x - sin_value * temp_y;
-      model.vertexes[i + 1] = sin_value * temp_x + cos_value * temp_y;
+    model.vertexes[i + 1] = cos(kConvertAngle - kConvertAngle * transform.prev_angle_x) * temp_y - sin(kConvertAngle - kConvertAngle * transform.prev_angle_x) * temp_z;
+    model.vertexes[i + 2] = sin(kConvertAngle - kConvertAngle * transform.prev_angle_x) * temp_y + cos(kConvertAngle - kConvertAngle * transform.prev_angle_x) * temp_z;
+    double temp_x = model.vertexes[i];
+    temp_z = model.vertexes[i + 2];
+    model.vertexes[i] = cos(kConvertAngle - kConvertAngle * transform.prev_angle_y) * temp_x - sin(kConvertAngle - kConvertAngle * transform.prev_angle_y) * temp_z;
+    model.vertexes[i + 2] = sin(kConvertAngle - kConvertAngle * transform.prev_angle_y) * temp_x + cos(kConvertAngle - kConvertAngle * transform.prev_angle_y) * temp_z;
+    temp_x = model.vertexes[i];
+    temp_y = model.vertexes[i + 1];
+    model.vertexes[i] = cos(kConvertAngle - kConvertAngle * transform.prev_angle_z) * temp_x - sin(kConvertAngle - kConvertAngle * transform.prev_angle_z) * temp_y;
+    model.vertexes[i + 1] = sin(kConvertAngle - kConvertAngle * transform.prev_angle_z) * temp_x + cos(kConvertAngle - kConvertAngle * transform.prev_angle_z) * temp_y;
     }
   }
-  SavePrevAngle(transform);
-}
-
-double Transformation::GetAngle(Transform &transform) {
-  double angle = 0;
-  double pr_a = 0;
-  angle = transform.value * kConvertAngle;
-  if (transform.axis == kX) {
-    pr_a = transform.prev_angle_x * kConvertAngle;
-  } else if (transform.axis == kY) {
-    pr_a = transform.prev_angle_y * kConvertAngle;
-  } else if (transform.axis == kZ) {
-    pr_a = transform.prev_angle_z * kConvertAngle;
-  }
-  return angle - pr_a;
-}
-
-void Transformation::SavePrevAngle(Transform &transform) {
-  if (transform.axis == kX) {
-    transform.prev_angle_x = transform.value;
-  } else if (transform.axis == kY) {
-    transform.prev_angle_y = transform.value;
-  } else if (transform.axis == kZ) {
-    transform.prev_angle_z = transform.value;
-  }
-}
 }  // namespace s21

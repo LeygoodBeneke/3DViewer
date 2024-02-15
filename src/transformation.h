@@ -19,8 +19,8 @@ class Transformation {
 
  private:
   static constexpr double kConvertAngle = M_PI / 180;
-  double GetAngle(Transform &transform);
-  void SavePrevAngle(Transform &transform);
+  // void GetAngle(Transform &transform);
+  // void SavePrevAngle(Transform &transform);
 };
 }  // namespace s21
 

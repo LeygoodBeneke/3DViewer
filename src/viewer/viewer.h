@@ -15,6 +15,7 @@
 #include <QTimer>
 #include <QString>
 #include <QVector>
+// #include <QColor>
 
 
 #include <QMainWindow>
@@ -35,6 +36,7 @@ class Viewer : public QMainWindow {
 
  private slots:
   void on_load_from_file_btn_clicked();
+  // void change_vertices_color();
 
  private:
   Ui::Viewer *ui;

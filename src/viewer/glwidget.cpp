@@ -15,6 +15,11 @@ GLWidget::~GLWidget() {
 void GLWidget::initializeGL() {
   glMatrixMode(GL_PROJECTION);
   glMatrixMode(GL_MODELVIEW);
+  global_settings.SetHigthColor(QColor(Qt::white));
+  global_settings.SetEdgeColor(QColor(Qt::white));
+  global_settings.SetBackgroundColor(QColor(Qt::black));
+  global_settings.SetEdgesType(0);
+  global_settings.SetEdgesSize(1);
 }
 
 void GLWidget::resizeGL(int width, int height) {
@@ -22,141 +27,65 @@ void GLWidget::resizeGL(int width, int height) {
 }
 
 void GLWidget::paintGL() {
-  // glMatrixMode(GL_PROJECTION);
-  // glClearColor(background.redF(), background.greenF(), background.blueF(), 1.0);
+  glClearColor(global_settings.GetBackgroundColor().redF(), global_settings.GetBackgroundColor().greenF(), global_settings.GetBackgroundColor().blueF(), 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  // glLoadIdentity();
-  // if (projection_type == ProjectionType::CENTRAL) {
-  //   gluPerspective(70.0, 1.5, 0.1, 50);
-  // } else
+  if (global_settings.GetProjectionType() == s21::GlobalViewSettings::ProjectionType::CENTRAL) {
+    gluPerspective(70.0, 1.5, 0.1, 50);
+  } else {
     glOrtho(-5, 5, -5, 5, -100, 100);
+  }
   gluLookAt(2, 2, 4, 0, 0, 0, 0, 1, 0);
 
+  s21::DataObj cur_data_obj = model->GetData();
+  
   glEnable(GL_PROGRAM_POINT_SIZE);
 
-  // if (vetr_method == VerticesDisplayMethod::CIRCLE) {
-  //   glEnable(GL_POINT_SMOOTH);
-  //   glPointSize(vertices_size);
-  // } else if (vetr_method == VerticesDisplayMethod::BLANK) {
-  //   glPointSize(1);
-  //   glDisable(GL_POINT_SMOOTH);
-  // } else {
-  //   glPointSize(vertices_size);
-  //   glDisable(GL_POINT_SMOOTH);
-  // }
-
-  // TURNE
-  // point *current_point_array = (point *)malloc(point_array_len * sizeof(point));
-  // for (int i = 0; i < point_array_len; i++) {
-  //   current_point_array[i] = point_array[i];
-  //   rotate_around_axis(&current_point_array[i].x, &current_point_array[i].y,
-  //                      current_angle_x);
-  //   rotate_around_axis(&current_point_array[i].y, &current_point_array[i].z,
-  //                      current_angle_y);
-  //   rotate_around_axis(&current_point_array[i].x, &current_point_array[i].z,
-  //                      current_angle_z);
-  // }
-  s21::DataObj cur_data_obj;
-  if(model != nullptr) {
-    cur_data_obj = model->GetData();
+  if (global_settings.GetVerticesDisplayMethod() == s21::GlobalViewSettings::VerticesDisplayMethod::CIRCLE) { // CIRCLE DONT WORK
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(global_settings.GetHigthSize());
+  } else if (global_settings.GetVerticesDisplayMethod() == s21::GlobalViewSettings::VerticesDisplayMethod::BLANK) {
+    glPointSize(1);
+    glDisable(GL_POINT_SMOOTH);
+  } else {
+    glPointSize(global_settings.GetHigthSize());
+    glDisable(GL_POINT_SMOOTH);
   }
 
   glBegin(GL_POINTS);
-  // int loc_counter = 0;
-  if(model != nullptr) {
-    for (unsigned int i = 0; i < cur_data_obj.count_vertex * 3; i += 3) {
-      // glColor3f(vertices_color.redF(), vertices_color.greenF(),
-      //           vertices_color.blueF());
-      glVertex3f(
-          cur_data_obj.vertexes[i],
-          cur_data_obj.vertexes[i + 1],
-          cur_data_obj.vertexes[i + 2]
-      );
-    }
+  glColor3f(global_settings.GetHigthColor().redF(), global_settings.GetHigthColor().greenF(), global_settings.GetHigthColor().blueF());
+  for (unsigned int i = 0; i < cur_data_obj.vertexes.size(); i += 3) {
+    glVertex3f(
+        cur_data_obj.vertexes[i],
+        cur_data_obj.vertexes[i + 1],
+        cur_data_obj.vertexes[i + 2]
+    );
   }
   glEnd();
 
-  // if (edges_type == EdgesType::DASHED) {
-  //   glEnable(GL_LINE_STIPPLE);
-  // } else {
-  //   glDisable(GL_LINE_STIPPLE);
-  // }
-  // glLineStipple(3, 0xDDDD);
+  GLfloat lineWidthRange[2] = {0.0f, 10.0f};
+  glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+  if (global_settings.GetEdgesType() == s21::GlobalViewSettings::EdgesType::DASHED) {
+    glEnable(GL_LINE_STIPPLE);
+  } else {
+    glDisable(GL_LINE_STIPPLE);
+  }
+  glLineStipple(3, 0xDDDD);
 
-  // glLineWidth(line_width);
+  glLineWidth(global_settings.GetEdgesSize());
 
   glBegin(GL_LINES);
-  // glColor3f(edges_color.redF(), edges_color.greenF(), edges_color.blueF());
-  // loc_counter = 0;
-  if (model != nullptr) {
-    for (unsigned int i = 0; i < cur_data_obj.count_facets * 2; ++i) {
-        glVertex3f(
-          cur_data_obj.vertexes[cur_data_obj.facets[i] * 3],
-          cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 1], 
-          cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 2]
-        );
-    }
+  glColor3f(global_settings.GetEdgeColor().redF(), global_settings.GetEdgeColor().greenF(), global_settings.GetEdgeColor().blueF());
+  for (unsigned int i = 0; i < cur_data_obj.facets.size(); ++i) {
+      glVertex3f(
+        cur_data_obj.vertexes[cur_data_obj.facets[i] * 3],
+        cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 1], 
+        cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 2]
+      );
   }
   glEnd();
-  // drawAxis();
-  // free(current_point_array);
 }
-
-// void GLWidget::drawAxis() {
-//   glBegin(GL_LINES);
-//   glColor3f(0.0, 0.0, 1.0);
-//   glVertex3f(0, 0, 0);
-//   glVertex3f(.5, 0, 0);
-//   glEnd();
-
-//   glBegin(GL_LINES);
-//   glColor3f(0.0, 1.0, 0.0);
-//   glVertex3f(0, 0, 0);
-//   glVertex3f(0, .5, 0);
-//   glEnd();
-
-//   glBegin(GL_LINES);
-//   glColor3f(1.0, 0.0, 0.0);
-//   glVertex3f(0, 0, 0);
-//   glVertex3f(0, 0, .5);
-//   glEnd();
-// }
-
-// void GLWidget::set_vertices_size(int value) {
-//   vertices_size = value;
-//   update();
-// }
-
-// void GLWidget::set_vertices_color(QColor new_color) {
-//   vertices_color = new_color;
-//   update();
-// }
-
-// void GLWidget::set_edges_color(QColor new_color) {
-//   edges_color = new_color;
-//   update();
-// }
-
-// void GLWidget::set_vertices_method(int value) {
-//   vetr_method = VerticesDisplayMethod(value);
-//   update();
-// }
-
-// void GLWidget::set_edges_type(int value) {
-//   edges_type = EdgesType(value);
-//   update();
-// }
-
-// void GLWidget::set_line_width(int value) {
-//   line_width = value;
-//   update();
-// }
-
-// void GLWidget::set_projection_type(int type) {
-//   projection_type = ProjectionType(type);
-//   update();
-// }
 
 void GLWidget::initialize_model() {
   s21::ReadOne* read = new s21::ReadOne();
@@ -178,14 +107,7 @@ void GLWidget::initialize_model() {
   }
   pos_settings = new s21::PositionModelSettings();
 
-  pos_settings->Attach(model); // Error
-
-  
-
-  // point gravity_center = {.x = 0, .y = 0, .z = 0};
-
-//  delete read;
-//  delete read2;
+  pos_settings->Attach(model); 
 
   update();
 }
@@ -223,5 +145,50 @@ void GLWidget::on_position_z_spinbox_valueChanged(double arg1) {
 
 void GLWidget::on_model_scale_slider_valueChanged(int arg1) {
   pos_settings->SetScale(arg1/10.0);
+  update();
+}
+
+void GLWidget::change_vertices_color() {
+  QColor new_color = QColorDialog::getColor(Qt::white, this, tr("Vertices Color:"));
+  global_settings.SetHigthColor(new_color);
+  update();
+}
+
+void GLWidget::change_edges_color() {
+  QColor new_color = QColorDialog::getColor(Qt::white, this, tr("Vertices Color:"));
+  global_settings.SetEdgeColor(new_color);
+  update();
+}
+
+void GLWidget::change_background_color() {
+  QColor new_bg = QColorDialog::getColor(Qt::black, this, tr("Background Color:"));
+  if (new_bg.isValid()) {
+    global_settings.SetBackgroundColor(new_bg);
+    update();
+  }
+}
+
+void GLWidget::set_edges_type(int type) { //need to see
+  global_settings.SetEdgesType(type);
+  update();
+}
+
+void GLWidget::set_line_width(int size) {
+  global_settings.SetEdgesSize(size/10.0);
+  update();
+}
+
+void GLWidget::set_vertices_method(int type) {
+  global_settings.SetVerticesDisplayMethod(type);
+  update();
+}
+
+void GLWidget::set_vertices_size(int size) {
+  global_settings.SetHigthSize(size);
+  update();
+}
+
+void GLWidget::set_projection_type(int type) {
+  global_settings.SetProectionType(type);
   update();
 }

@@ -1,6 +1,7 @@
 // #ifndef MODEL_H_
 // #define MODEL_H_
 
+#include <QColor>
 #include <string>
 #include "obj_data.h"
 #include "transformation.h"
@@ -138,9 +139,9 @@ public:
     s21::DataObj GetData() {
         s21::DataObj ret_data = _data;
         s21::Transformation t;
-        t.Rotate(ret_data, _transform);
         t.Scale(ret_data, _transform);
-//        t.Translate(ret_data, _transform);
+        t.Rotate(ret_data, _transform);
+        t.Translate(ret_data, _transform);
 
         return ret_data;
     };
@@ -150,32 +151,48 @@ private:
     s21::Transform _transform;
 };
 
-// class GlobalViewSettings { //need to complite
-// public:
-//    static GlobalViewSettings* Instance() {
-//         if (_instance == 0) {
-//             _instance = new GlobalViewSettings;
-//         }
-//         return _instance;
-//    };
+class GlobalViewSettings { //need to complite
+public:
+   static GlobalViewSettings& Instance() {
+        static GlobalViewSettings _instance;
+        return _instance;
+   };
 
-//     void SetProectionType(bool type);
-//     void SetBackColor(int color);
+    enum VerticesDisplayMethod {SQUARE, CIRCLE, BLANK};
+    enum EdgesType {SOLID, DASHED};
+    enum ProjectionType {PARALLEL, CENTRAL};
 
-// protected:
-//     GlobalViewSettings();
-    
-// private:
-//     static GlobalViewSettings* _instance = 0;
-//     static bool _type_of_proection;
-//     static int _higth_color;
-//     static double _higth_size;
-//     static double _higth_style;
-//     static int _ribs_color;
-//     static double _ribs_size;
-//     static double _ribs_style;
-//     static int _back_colour;
-// };
+    void SetProectionType(int type) {_type_of_proection = ProjectionType(type);};
+    void SetHigthColor(QColor color) {_higth_color = color;};
+    void SetEdgeColor(QColor color) {_edge_color = color;};
+    void SetBackgroundColor(QColor color) {_back_colour = color;};
+    void SetEdgesType(int type) {_edge_style = EdgesType(type);};
+    void SetHigthSize(double size) {_higth_size = size;};
+    void SetEdgesSize(double size) {_edge_size = size;};
+    void SetVerticesDisplayMethod(int type) {_higth_style = VerticesDisplayMethod(type);};
+
+    QColor GetHigthColor() {return _higth_color;};
+    QColor GetEdgeColor() {return _edge_color;};
+    QColor GetBackgroundColor() {return _back_colour;};
+    EdgesType GetEdgesType() {return _edge_style;};
+    ProjectionType GetProjectionType() {return _type_of_proection;};
+    VerticesDisplayMethod GetVerticesDisplayMethod() {return _higth_style;};
+    GLfloat GetHigthSize() {return _higth_size;};
+    GLfloat GetEdgesSize() {return _edge_size;};
+
+private:
+    GlobalViewSettings() {};
+    ~GlobalViewSettings() {};
+
+    ProjectionType _type_of_proection;
+    QColor _higth_color;
+    GLfloat _higth_size;
+    VerticesDisplayMethod _higth_style;
+    QColor _edge_color;
+    GLfloat _edge_size;
+    EdgesType _edge_style;
+    QColor _back_colour;
+};
 
 }
 
