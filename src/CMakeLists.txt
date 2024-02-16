@@ -20,6 +20,14 @@ set(PROJECT_SOURCES
         View/viewer.ui
         View/glwidget.cpp
         View/glwidget.h
+        Model/model.cpp
+        Model/obj_data.h
+        Model/parser.cpp
+        Model/transformation.cpp
+        Model/transformation.h
+)
+set(CMAKE_CXX_FLAGS
+       "-lglut -lGL -lGLU"
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

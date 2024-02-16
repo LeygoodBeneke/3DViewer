@@ -4,6 +4,7 @@ GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
       //background(QColor(Qt::black)),
      // vertices_color(QColor(Qt::white))
+    
 {}
 
 GLWidget::~GLWidget() {
@@ -11,192 +12,183 @@ GLWidget::~GLWidget() {
   // if (line_array) free(line_array);
 }
 
-// void GLWidget::initializeGL() {
-//   glMatrixMode(GL_PROJECTION);
-//   glMatrixMode(GL_MODELVIEW);
-// }
+void GLWidget::initializeGL() {
+  glMatrixMode(GL_PROJECTION);
+  glMatrixMode(GL_MODELVIEW);
+  global_settings.SetHigthColor(QColor(Qt::white));
+  global_settings.SetEdgeColor(QColor(Qt::white));
+  global_settings.SetBackgroundColor(QColor(Qt::black));
+  global_settings.SetEdgesType(0);
+  global_settings.SetEdgesSize(1);
+}
 
-// void GLWidget::resizeGL(int width, int height) {
-//   glViewport(0, 0, height, width);
-// }
+void GLWidget::resizeGL(int width, int height) {
+  glViewport(0, 0, height, width);
+}
 
-// void GLWidget::paintGL() {
-//   glClearColor(background.redF(), background.greenF(), background.blueF(), 1.0);
-//   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void GLWidget::paintGL() {
+  glClearColor(global_settings.GetBackgroundColor().redF(), global_settings.GetBackgroundColor().greenF(), global_settings.GetBackgroundColor().blueF(), 1.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  if (global_settings.GetProjectionType() == s21::GlobalViewSettings::ProjectionType::CENTRAL) {
+    gluPerspective(70.0, 1.5, 0.1, 50);
+  } else {
+    glOrtho(-5, 5, -5, 5, -100, 100);
+  }
+  gluLookAt(2, 2, 4, 0, 0, 0, 0, 1, 0);
 
-//   glLoadIdentity();
-//   if (projection_type == ProjectionType::CENTRAL) {
-//     gluPerspective(70.0, 1.5, 0.1, 50);
-//   } else
-//     glOrtho(-5, 5, -5, 5, -100, 100);
-//   gluLookAt(2, 2, 4, 0, 0, 0, 0, 1, 0);
+  s21::DataObj cur_data_obj = model->GetData();
+  
+  glEnable(GL_PROGRAM_POINT_SIZE);
 
-//   glEnable(GL_PROGRAM_POINT_SIZE);
+  if (global_settings.GetVerticesDisplayMethod() == s21::GlobalViewSettings::VerticesDisplayMethod::CIRCLE) { // CIRCLE DONT WORK
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(global_settings.GetHigthSize());
+  } else if (global_settings.GetVerticesDisplayMethod() == s21::GlobalViewSettings::VerticesDisplayMethod::BLANK) {
+    glPointSize(1);
+    glDisable(GL_POINT_SMOOTH);
+  } else {
+    glPointSize(global_settings.GetHigthSize());
+    glDisable(GL_POINT_SMOOTH);
+  }
 
-//   if (vetr_method == VerticesDisplayMethod::CIRCLE) {
-//     glEnable(GL_POINT_SMOOTH);
-//     glPointSize(vertices_size);
-//   } else if (vetr_method == VerticesDisplayMethod::BLANK) {
-//     glPointSize(1);
-//     glDisable(GL_POINT_SMOOTH);
-//   } else {
-//     glPointSize(vertices_size);
-//     glDisable(GL_POINT_SMOOTH);
-//   }
+  glBegin(GL_POINTS);
+  glColor3f(global_settings.GetHigthColor().redF(), global_settings.GetHigthColor().greenF(), global_settings.GetHigthColor().blueF());
+  for (unsigned int i = 0; i < cur_data_obj.vertexes.size(); i += 3) {
+    glVertex3f(
+        cur_data_obj.vertexes[i],
+        cur_data_obj.vertexes[i + 1],
+        cur_data_obj.vertexes[i + 2]
+    );
+  }
+  glEnd();
 
-//   point *current_point_array = (point *)malloc(point_array_len * sizeof(point));
-//   for (int i = 0; i < point_array_len; i++) {
-//     current_point_array[i] = point_array[i];
-//     rotate_around_axis(&current_point_array[i].x, &current_point_array[i].y,
-//                        current_angle_x);
-//     rotate_around_axis(&current_point_array[i].y, &current_point_array[i].z,
-//                        current_angle_y);
-//     rotate_around_axis(&current_point_array[i].x, &current_point_array[i].z,
-//                        current_angle_z);
-//   }
+  GLfloat lineWidthRange[2] = {0.0f, 10.0f};
+  glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+  if (global_settings.GetEdgesType() == s21::GlobalViewSettings::EdgesType::DASHED) {
+    glEnable(GL_LINE_STIPPLE);
+  } else {
+    glDisable(GL_LINE_STIPPLE);
+  }
+  glLineStipple(3, 0xDDDD);
 
-//   glBegin(GL_POINTS);
-//   for (int i = 0; i < point_array_len; i++) {
-//     glColor3f(vertices_color.redF(), vertices_color.greenF(),
-//               vertices_color.blueF());
-//     glVertex3f(
+  glLineWidth(global_settings.GetEdgesSize());
 
-//         current_point_array[i].x * scale + position_x,
-//         current_point_array[i].y * scale + position_y,
-//         current_point_array[i].z * scale + position_z);
-//   }
-//   glEnd();
+  glBegin(GL_LINES);
+  glColor3f(global_settings.GetEdgeColor().redF(), global_settings.GetEdgeColor().greenF(), global_settings.GetEdgeColor().blueF());
+  for (unsigned int i = 0; i < cur_data_obj.facets.size(); ++i) {
+      glVertex3f(
+        cur_data_obj.vertexes[cur_data_obj.facets[i] * 3],
+        cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 1], 
+        cur_data_obj.vertexes[cur_data_obj.facets[i] * 3 + 2]
+      );
+  }
+  glEnd();
+}
 
-//   if (edges_type == EdgesType::DASHED) {
-//     glEnable(GL_LINE_STIPPLE);
-//   } else {
-//     glDisable(GL_LINE_STIPPLE);
-//   }
-//   glLineStipple(3, 0xDDDD);
+void GLWidget::initialize_model() {
+  s21::ReadOne* read = new s21::ReadOne();
+  s21::ReadTwo* read2 = new s21::ReadTwo();
+  s21::Parser parser(read);
+  s21::DataObj data_info;
+  s21::Transform transform;
+  parser.ReadFile(modelPath.toStdString(), &data_info);
+  parser.setStrategy(read2);
+  parser.ReadFile(modelPath.toStdString(), &data_info);
 
-//   glLineWidth(line_width);
-//   glBegin(GL_LINES);
+  if (model != nullptr) {
+    delete model;
+  }
+  model = new s21::Model(data_info, transform);
+  
+  if (pos_settings != nullptr) {
+    delete pos_settings;
+  }
+  pos_settings = new s21::PositionModelSettings();
 
-//   glColor3f(edges_color.redF(), edges_color.greenF(), edges_color.blueF());
-//   for (int i = 0; i < line_array_len; i++) {
-//     glVertex3f(current_point_array[line_array[i].a - 1].x * scale + position_x,
-//                current_point_array[line_array[i].a - 1].y * scale + position_y,
-//                current_point_array[line_array[i].a - 1].z * scale + position_z);
-//     glVertex3f(current_point_array[line_array[i].b - 1].x * scale + position_x,
-//                current_point_array[line_array[i].b - 1].y * scale + position_y,
-//                current_point_array[line_array[i].b - 1].z * scale + position_z);
-//   }
-//   glEnd();
-//   drawAxis();
-//   free(current_point_array);
-// }
+  pos_settings->Attach(model); 
 
-// void GLWidget::drawAxis() {
-//   glBegin(GL_LINES);
-//   glColor3f(0.0, 0.0, 1.0);
-//   glVertex3f(0, 0, 0);
-//   glVertex3f(.5, 0, 0);
-//   glEnd();
+  update();
+}
 
-//   glBegin(GL_LINES);
-//   glColor3f(0.0, 1.0, 0.0);
-//   glVertex3f(0, 0, 0);
-//   glVertex3f(0, .5, 0);
-//   glEnd();
 
-//   glBegin(GL_LINES);
-//   glColor3f(1.0, 0.0, 0.0);
-//   glVertex3f(0, 0, 0);
-//   glVertex3f(0, 0, .5);
-//   glEnd();
-// }
+void GLWidget::on_rotation_x_spinbox_valueChanged(double arg1) {
+  pos_settings->SetAngleX(arg1);
+  update();
+}
 
-// void GLWidget::rotation_x(double angle) {
-//   current_angle_x = angle * M_PI / 180.0;
-//   update();
-// }
-// void GLWidget::rotation_y(double angle) {
-//   current_angle_y = angle * M_PI / 180.0;
-//   update();
-// }
-// void GLWidget::rotation_z(double angle) {
-//   current_angle_z = angle * M_PI / 180.0;
-//   update();
-// }
+void GLWidget::on_rotation_y_spinbox_valueChanged(double arg1) {
+  pos_settings->SetAngleY(arg1);
+  update();
+}
 
-// void GLWidget::set_vertices_size(int value) {
-//   vertices_size = value;
-//   update();
-// }
+void GLWidget::on_rotation_z_spinbox_valueChanged(double arg1) {
+  pos_settings->SetAngleZ(arg1);
+  update();
+}
 
-// void GLWidget::set_vertices_color(QColor new_color) {
-//   vertices_color = new_color;
-//   update();
-// }
+void GLWidget::on_position_x_spinbox_valueChanged(double arg1) {
+  pos_settings->SetPosX(arg1);
+  update();
+}
 
-// void GLWidget::set_edges_color(QColor new_color) {
-//   edges_color = new_color;
-//   update();
-// }
+void GLWidget::on_position_y_spinbox_valueChanged(double arg1) {
+  pos_settings->SetPosY(arg1);
+  update();
+}
 
-// void GLWidget::set_vertices_method(int value) {
-//   vetr_method = VerticesDisplayMethod(value);
-//   update();
-// }
+void GLWidget::on_position_z_spinbox_valueChanged(double arg1) {
+  pos_settings->SetPosZ(arg1);
+  update();
+}
 
-// void GLWidget::set_edges_type(int value) {
-//   edges_type = EdgesType(value);
-//   update();
-// }
+void GLWidget::on_model_scale_slider_valueChanged(int arg1) {
+  pos_settings->SetScale(arg1/10.0);
+  update();
+}
 
-// void GLWidget::set_line_width(int value) {
-//   line_width = value;
-//   update();
-// }
+void GLWidget::change_vertices_color() {
+  QColor new_color = QColorDialog::getColor(Qt::white, this, tr("Vertices Color:"));
+  global_settings.SetHigthColor(new_color);
+  update();
+}
 
-// void GLWidget::set_position_x(double x) {
-//   position_x = x;
-//   update();
-// }
+void GLWidget::change_edges_color() {
+  QColor new_color = QColorDialog::getColor(Qt::white, this, tr("Vertices Color:"));
+  global_settings.SetEdgeColor(new_color);
+  update();
+}
 
-// void GLWidget::set_position_y(double y) {
-//   position_y = y;
-//   update();
-// }
+void GLWidget::change_background_color() {
+  QColor new_bg = QColorDialog::getColor(Qt::black, this, tr("Background Color:"));
+  if (new_bg.isValid()) {
+    global_settings.SetBackgroundColor(new_bg);
+    update();
+  }
+}
 
-// void GLWidget::set_position_z(double z) {
-//   position_z = z;
-//   update();
-// }
-// void GLWidget::set_scale(int size) {
-//   scale = size / 100.0;
-//   update();
-// }
+void GLWidget::set_edges_type(int type) { //need to see
+  global_settings.SetEdgesType(type);
+  update();
+}
 
-// void GLWidget::set_projection_type(int type) {
-//   projection_type = ProjectionType(type);
-//   update();
-// }
+void GLWidget::set_line_width(int size) {
+  global_settings.SetEdgesSize(size/10.0);
+  update();
+}
 
-// void GLWidget::initialize_model() {
-//   parser((char *)modelPath.toStdString().c_str(), &point_array,
-//          &point_array_len, &line_array, &line_array_len);
+void GLWidget::set_vertices_method(int type) {
+  global_settings.SetVerticesDisplayMethod(type);
+  update();
+}
 
-//   point gravity_center = {.x = 0, .y = 0, .z = 0};
+void GLWidget::set_vertices_size(int size) {
+  global_settings.SetHigthSize(size);
+  update();
+}
 
-//   for (int i = 0; i < point_array_len; i++) {
-//     gravity_center.x += point_array[i].x;
-//     gravity_center.y += point_array[i].y;
-//     gravity_center.z += point_array[i].z;
-//   }
-//   gravity_center.x /= point_array_len;
-//   gravity_center.y /= point_array_len;
-//   gravity_center.z /= point_array_len;
-
-//   for (int i = 0; i < point_array_len; i++) {
-//     point_array[i].x -= gravity_center.x;
-//     point_array[i].y -= gravity_center.y;
-//     point_array[i].z -= gravity_center.z;
-//   }
-//   update();
-// }
+void GLWidget::set_projection_type(int type) {
+  global_settings.SetProectionType(type);
+  update();
+}
