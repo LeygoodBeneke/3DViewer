@@ -125,4 +125,53 @@ void Viewer::reset_settings() {
   glWidget->update();
 }
 
+void Viewer::on_screenshot_btn_clicked() {
+  QString filename =
+      QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
+  QString filter = "JPEG Files (*.jpg);;BMP Files (*.bmp);;All Files (*)";
+  QString filepath = QFileDialog::getSaveFileName(
+      this, "Enter the name of screenshot", filename, filter);
+  if (!filepath.isEmpty()) {
+    QString extension = "jpg";
+    extension = QFileInfo(filepath).suffix().toLower();
+    extension = extension.isEmpty() ? "jpg" : extension;
+    if (!(extension == "jpeg" || extension == "jpg" || extension == "bmp")) {
+      QMessageBox::warning(this, "Warning!",
+                           "Invalid file extension. Expected JPG or BMP");
+    }
+    QImage image = glWidget->grab().toImage();
+    image.save(filepath, extension.toUtf8().constData());
+  }
+}
+
+void Viewer::on_record_btn_clicked() {
+  if (!glWidget->modelPath.isEmpty()) {
+    timer = new QTimer(this);
+    gif = new QGifImage();
+    counter = 0;
+    timer->start(100);
+    connect(timer, SIGNAL(timeout()), this, SLOT(create_gif()));
+    ui->record_btn->setText("Recording in progress");
+  } else {
+    QMessageBox::warning(this, "Warning!", "File not uploaded");
+  }
+}
+
+void Viewer::create_gif() {
+  gif->setDefaultDelay(50);
+  QImage image = glWidget->grabFramebuffer();
+  QImage resized_image =
+      image.scaled(1920, 1080, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  gif->addFrame(resized_image);
+  counter++;
+  if (counter == 50) {
+    timer->stop();
+    QString filename =
+        QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
+    gif->save(filename);
+    QMessageBox::information(this, "Success!", "Gif saved successfully");
+    delete gif;
+    ui->record_btn->setText("Start recording");
+  }
+}
 

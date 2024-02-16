@@ -13,6 +13,8 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 COMPONENTS Widgets OpenGL OpenGLWidgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+add_subdirectory(Model/third_party/QtGifImage)
+
 set(PROJECT_SOURCES
         View/main.cpp
         View/viewer.cpp
@@ -53,7 +55,15 @@ else()
     endif()
 endif()
 
+set(LINK_LIBRARIES
+        QtGifImage::QtGifImage
+        # other link libraries
+        # For example:
+        Qt${QT_VERSION_MAJOR}::Widgets
+)
+
 target_link_libraries(Viewer_2_0 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt6::OpenGLWidgets)
+target_link_libraries(Viewer_2_0 PRIVATE ${LINK_LIBRARIES})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

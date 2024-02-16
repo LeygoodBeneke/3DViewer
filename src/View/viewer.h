@@ -15,6 +15,7 @@
 #include <QTimer>
 #include <QString>
 #include <QVector>
+#include "../Model/third_party/QtGifImage/include/gifimage/qgifimage.h"
 // #include <QColor>
 
 
@@ -43,10 +44,18 @@ class Viewer : public QMainWindow {
   Ui::Viewer *ui;
   QSettings *settings;
   GLWidget *glWidget;
+
+  QTimer *timer;
+  QGifImage *gif;
+  int counter;
+
  
  public slots:
   void load_settings();
   void save_settings();
   void reset_settings();
+  void on_screenshot_btn_clicked();
+  void on_record_btn_clicked();
+  void create_gif();
 };
 #endif  // VIEWER_H
