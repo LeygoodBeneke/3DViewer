@@ -64,8 +64,8 @@ void GLWidget::paintGL() {
   }
   glEnd();
 
-  GLfloat lineWidthRange[2] = {0.0f, 10.0f};
-  glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+  //GLfloat lineWidthRange[2] = {0.0f, 10.0f};
+  //glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
   if (global_settings.GetEdgesType() == s21::GlobalViewSettings::EdgesType::DASHED) {
     glEnable(GL_LINE_STIPPLE);
   } else {
@@ -144,7 +144,7 @@ void GLWidget::on_position_z_spinbox_valueChanged(double arg1) {
 }
 
 void GLWidget::on_model_scale_slider_valueChanged(int arg1) {
-  pos_settings->SetScale(arg1/10.0);
+  pos_settings->SetScale(arg1);
   update();
 }
 
