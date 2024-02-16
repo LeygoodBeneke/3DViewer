@@ -39,6 +39,14 @@ class Viewer : public QMainWindow {
   // void change_vertices_color();
 
  private:
+  s21::GlobalViewSettings& global_settings = s21::GlobalViewSettings::Instance();
   Ui::Viewer *ui;
+  QSettings *settings;
+  GLWidget *glWidget;
+ 
+ public slots:
+  void load_settings();
+  void save_settings();
+  void reset_settings();
 };
 #endif  // VIEWER_H

@@ -1,4 +1,5 @@
 #include "glwidget.h"
+#include <iostream>
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -15,11 +16,11 @@ GLWidget::~GLWidget() {
 void GLWidget::initializeGL() {
   glMatrixMode(GL_PROJECTION);
   glMatrixMode(GL_MODELVIEW);
-  global_settings.SetHigthColor(QColor(Qt::white));
-  global_settings.SetEdgeColor(QColor(Qt::white));
-  global_settings.SetBackgroundColor(QColor(Qt::black));
-  global_settings.SetEdgesType(0);
-  global_settings.SetEdgesSize(1);
+  // global_settings.SetHigthColor(QColor(Qt::white));
+  // global_settings.SetEdgeColor(QColor(Qt::white));
+  // global_settings.SetBackgroundColor(QColor(Qt::black));
+  // global_settings.SetEdgesType(0);
+  // global_settings.SetEdgesSize(1);
 }
 
 void GLWidget::resizeGL(int width, int height) {

@@ -2,6 +2,7 @@
 // #define MODEL_H_
 
 #include <QColor>
+#include <QSettings>
 #include <string>
 #include "obj_data.h"
 #include "transformation.h"
@@ -161,6 +162,7 @@ public:
     enum VerticesDisplayMethod {SQUARE, CIRCLE, BLANK};
     enum EdgesType {SOLID, DASHED};
     enum ProjectionType {PARALLEL, CENTRAL};
+    QSettings *settings;
 
     void SetProectionType(int type) {_type_of_proection = ProjectionType(type);};
     void SetHigthColor(QColor color) {_higth_color = color;};
@@ -181,8 +183,69 @@ public:
     float GetEdgesSize() {return _edge_size;};
 
 private:
-    GlobalViewSettings() {};
-    ~GlobalViewSettings() {};
+    GlobalViewSettings() {
+      settings = new QSettings();
+ QVariant bg = settings->value("background");
+  QVariant width = settings->value("width");
+  QVariant edges_t = settings->value("edges_t");
+  QVariant edges_color = settings->value("edges_color");
+  QVariant vetr_method = settings->value("vetr_method");
+  QVariant vertices_size = settings->value("vertices_size");
+  QVariant vertices_color = settings->value("vertices_color");
+  QVariant projection_type = settings->value("projection_type");
+
+  if (bg.isValid()) {
+    // glWidget->set_background(bg.value<QColor>());
+    SetBackgroundColor(bg.value<QColor>());
+  }
+  if (width.isValid()) {
+    // glWidget->set_line_width(width.value<float>());
+    SetHigthSize(width.value<float>());
+    // ui->edges_thikness_slider->setValue(width.value<float>());
+  }
+  if (edges_t.isValid()) {
+    // glWidget->set_edges_type(edges_t.value<int>());
+    SetEdgesType(edges_t.value<int>());
+    // ui->edges_type_combobox->setCurrentIndex(edges_t.value<int>());
+  }
+  if (edges_color.isValid()) {
+    SetEdgeColor(edges_color.value<QColor>());
+  }
+  if (vetr_method.isValid()) {
+    SetVerticesDisplayMethod(vetr_method.value<int>());
+    // glWidget->set_vertices_method(vetr_method.value<int>());
+    // ui->vertices_display_method_combobox->setCurrentIndex(
+    //    vetr_method.value<int>());
+  }
+  if (vertices_size.isValid()) {
+    SetHigthSize(vertices_size.value<float>());
+    //glWidget->set_vertices_size(vertices_size.value<float>());
+    //ui->vertices_size_slider->setValue(vertices_size.value<float>());
+  }
+  if (vertices_color.isValid()) {
+    SetHigthColor(vertices_color.value<QColor>());
+    //glWidget->set_vertices_color(vertices_color.value<QColor>());
+  }
+  if (projection_type.isValid()) {
+    SetProectionType(projection_type.value<int>());
+    //glWidget->set_projection_type(projection_type.value<int>());
+    //ui->projection_type_combobox->setCurrentIndex(projection_type.value<int>());
+  }
+    };
+
+    ~GlobalViewSettings() {
+
+
+      settings->setValue("background", GetBackgroundColor());
+      settings->setValue("width", GetHigthSize());
+      settings->setValue("edges_t", GetEdgesType());
+      settings->setValue("edges_color", GetEdgeColor());
+      settings->setValue("vetr_method", GetVerticesDisplayMethod());
+      settings->setValue("vertices_size", GetHigthSize());
+      settings->setValue("vertices_color", GetHigthColor());
+      settings->setValue("projection_type", GetProjectionType());
+
+    };
 
     ProjectionType _type_of_proection;
     QColor _higth_color;
