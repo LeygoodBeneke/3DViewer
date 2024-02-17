@@ -44,6 +44,8 @@ public:
     ModelContrl() : _model(new Model) {};
     ModelContrl(DataObj data, Transform transform) : _model(new Model(data, transform)) {};
 
+    ~ModelContrl() {delete _model;};
+
     DataObj GetData() {
         return _model->GetData();
     };
