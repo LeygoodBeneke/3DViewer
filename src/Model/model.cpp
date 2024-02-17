@@ -212,8 +212,6 @@ private:
     };
 
     ~GlobalViewSettings() {
-
-
       settings->setValue("background", GetBackgroundColor());
       settings->setValue("width", GetHigthSize());
       settings->setValue("edges_t", GetEdgesType());

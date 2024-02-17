@@ -74,8 +74,8 @@ void GLWidget::initialize_model() {
     delete pos_settings;
   }
   pos_settings = new s21::PosSettingsContrl();
-
-  pos_settings->Attach(model); 
+  
+  pos_settings->Attach(model->GetModel()); 
 
   update();
 }
@@ -173,10 +173,10 @@ void GLWidget::set_proection_view() {
 void GLWidget::set_point_view() {
   glEnable(GL_PROGRAM_POINT_SIZE);
 
-  if (global_settings.GetVerticesDisplayMethod() == VerticesDisplayMethod::CIRCLE) { // CIRCLE DONT WORK
+  if (global_settings.GetDisplayMethod() == VerticesDisplayMethod::CIRCLE) { // CIRCLE DONT WORK
     glEnable(GL_POINT_SMOOTH);
     glPointSize(global_settings.GetHigthSize());
-  } else if (global_settings.GetVerticesDisplayMethod() == VerticesDisplayMethod::BLANK) {
+  } else if (global_settings.GetDisplayMethod() == VerticesDisplayMethod::BLANK) {
     glPointSize(1);
     glDisable(GL_POINT_SMOOTH);
   } else {

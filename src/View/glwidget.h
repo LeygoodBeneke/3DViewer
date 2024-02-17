@@ -26,7 +26,6 @@
 
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
-#include "../Model/model.cpp"
 #include "../Model/parser.h"
 #include "../Controller/contrl.cpp"
 

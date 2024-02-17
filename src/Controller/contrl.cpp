@@ -15,7 +15,7 @@ public:
     QColor GetLineColor() {return _global_settings.GetEdgeColor();};
     QColor GetHigthColor() {return _global_settings.GetHigthColor();};
 
-    VerticesDisplayMethod GetDisplayMethod() {return _global_settings.GetDisplayMethod();};
+    VerticesDisplayMethod GetDisplayMethod() {return _global_settings.GetVerticesDisplayMethod();};
     EdgesType GetEdgesType() {return _global_settings.GetEdgesType();};
     ProjectionType GetProjectionType() {return _global_settings.GetProjectionType();};
 
@@ -41,15 +41,19 @@ private:
 
 class ModelContrl {
 public:
-    ModelContrl() {};
-    ModelContrl(DataObj data, Transform transform) : _model(Model(data, transform)) {};
+    ModelContrl() : _model(new Model) {};
+    ModelContrl(DataObj data, Transform transform) : _model(new Model(data, transform)) {};
 
-    s21::DataObj GetData() {
-        return _model.GetData();
+    DataObj GetData() {
+        return _model->GetData();
     };
 
+    Model* GetModel() {
+        return _model;
+    }    
+
 private:
-    Model _model;
+    Model* _model;
 };
 
 class PosSettingsContrl {
@@ -75,6 +79,8 @@ public:
     void SetPosZ(double z) {_pos_settings.SetPosZ(z);};
 
     void SetScale(double zoom) {_pos_settings.SetScale(zoom);};
+
+    void Attach(Observer* pos) {_pos_settings.Attach(pos);};
 
 private:
     PositionModelSettings _pos_settings;
