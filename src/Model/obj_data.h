@@ -15,7 +15,6 @@ struct DataObj {
 };
 
 struct Transform {
-  int axis = 0;
   double value = 0;
   double prev_angle_x = 0;
   double prev_angle_y = 0;
