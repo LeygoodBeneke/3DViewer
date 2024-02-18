@@ -31,7 +31,7 @@ dist:
 	tar -cf Viewer_2_0.tar build/Viewer_2_0 
 
 tests:
-	g++ Tests/*.cpp Model/*.cpp -o s21_test -lgtest
+	g++ Tests/*.cpp Model/parser.cpp -lgtest -o s21_test
 	./s21_test
 
 valgrind: tests
