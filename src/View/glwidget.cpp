@@ -3,24 +3,16 @@
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-      //background(QColor(Qt::black)),
-     // vertices_color(QColor(Qt::white))
-    
 {}
 
 GLWidget::~GLWidget() {
-  // if (point_array) free(point_array);
-  // if (line_array) free(line_array);
+  delete model;
+  delete pos_settings;
 }
 
 void GLWidget::initializeGL() {
   glMatrixMode(GL_PROJECTION);
   glMatrixMode(GL_MODELVIEW);
-  // global_settings.SetHigthColor(QColor(Qt::white));
-  // global_settings.SetEdgeColor(QColor(Qt::white));
-  // global_settings.SetBackgroundColor(QColor(Qt::black));
-  // global_settings.SetEdgesType(0);
-  // global_settings.SetEdgesSize(1);
 }
 
 void GLWidget::resizeGL(int width, int height) {
@@ -28,31 +20,15 @@ void GLWidget::resizeGL(int width, int height) {
 }
 
 void GLWidget::paintGL() {
-  glClearColor(global_settings.GetBackgroundColor().redF(), global_settings.GetBackgroundColor().greenF(), global_settings.GetBackgroundColor().blueF(), 1.0);
+  glClearColor(global_settings.GetBGColor().redF(), global_settings.GetBGColor().greenF(), global_settings.GetBGColor().blueF(), 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // glMatrixMode(GL_PROJECTION);
+
   glLoadIdentity();
-  if (global_settings.GetProjectionType() == s21::GlobalViewSettings::ProjectionType::CENTRAL) {
-    gluPerspective(70.0, 1.5, 0.1, 50);
-  } else {
-    glOrtho(-5, 5, -5, 5, -100, 100);
-  }
-  gluLookAt(2, 2, 4, 0, 0, 0, 0, 1, 0);
+  set_proection_view();
 
   s21::DataObj cur_data_obj = model->GetData();
-  
-  glEnable(GL_PROGRAM_POINT_SIZE);
 
-  if (global_settings.GetVerticesDisplayMethod() == s21::GlobalViewSettings::VerticesDisplayMethod::CIRCLE) { // CIRCLE DONT WORK
-    glEnable(GL_POINT_SMOOTH);
-    glPointSize(global_settings.GetHigthSize());
-  } else if (global_settings.GetVerticesDisplayMethod() == s21::GlobalViewSettings::VerticesDisplayMethod::BLANK) {
-    glPointSize(1);
-    glDisable(GL_POINT_SMOOTH);
-  } else {
-    glPointSize(global_settings.GetHigthSize());
-    glDisable(GL_POINT_SMOOTH);
-  }
+  set_point_view();
 
   glBegin(GL_POINTS);
   glColor3f(global_settings.GetHigthColor().redF(), global_settings.GetHigthColor().greenF(), global_settings.GetHigthColor().blueF());
@@ -65,19 +41,10 @@ void GLWidget::paintGL() {
   }
   glEnd();
 
-  //GLfloat lineWidthRange[2] = {0.0f, 10.0f};
-  //glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
-  if (global_settings.GetEdgesType() == s21::GlobalViewSettings::EdgesType::DASHED) {
-    glEnable(GL_LINE_STIPPLE);
-  } else {
-    glDisable(GL_LINE_STIPPLE);
-  }
-  glLineStipple(3, 0xDDDD);
-
-  glLineWidth(global_settings.GetEdgesSize());
+  set_line_view();
 
   glBegin(GL_LINES);
-  glColor3f(global_settings.GetEdgeColor().redF(), global_settings.GetEdgeColor().greenF(), global_settings.GetEdgeColor().blueF());
+  glColor3f(global_settings.GetLineColor().redF(), global_settings.GetLineColor().greenF(), global_settings.GetLineColor().blueF());
   for (unsigned int i = 0; i < cur_data_obj.facets.size(); ++i) {
       glVertex3f(
         cur_data_obj.vertexes[cur_data_obj.facets[i] * 3],
@@ -101,14 +68,14 @@ void GLWidget::initialize_model() {
   if (model != nullptr) {
     delete model;
   }
-  model = new s21::Model(data_info, transform);
+  model = new s21::ModelContrl(data_info, transform);
   
   if (pos_settings != nullptr) {
     delete pos_settings;
   }
-  pos_settings = new s21::PositionModelSettings();
-
-  pos_settings->Attach(model); 
+  pos_settings = new s21::PosSettingsContrl();
+  
+  pos_settings->Attach(model->GetModel()); 
 
   update();
 }
@@ -192,4 +159,40 @@ void GLWidget::set_vertices_size(int size) {
 void GLWidget::set_projection_type(int type) {
   global_settings.SetProectionType(type);
   update();
+}
+
+void GLWidget::set_proection_view() {
+  if (global_settings.GetProjectionType() == ProjectionType::CENTRAL) {
+    gluPerspective(70.0, 1.5, 0.1, 50);
+  } else {
+    glOrtho(-5, 5, -5, 5, -100, 100);
+  }
+  gluLookAt(2, 2, 4, 0, 0, 0, 0, 1, 0);
+}
+
+void GLWidget::set_point_view() {
+  glEnable(GL_PROGRAM_POINT_SIZE);
+
+  if (global_settings.GetDisplayMethod() == VerticesDisplayMethod::CIRCLE) { // CIRCLE DONT WORK
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(global_settings.GetHigthSize());
+  } else if (global_settings.GetDisplayMethod() == VerticesDisplayMethod::BLANK) {
+    glPointSize(1);
+    glDisable(GL_POINT_SMOOTH);
+  } else {
+    glPointSize(global_settings.GetHigthSize());
+    glDisable(GL_POINT_SMOOTH);
+  }
+}
+
+void GLWidget::set_line_view() {
+  if (global_settings.GetEdgesType() == EdgesType::DASHED) {
+    glEnable(GL_LINE_STIPPLE);
+  } else {
+    glDisable(GL_LINE_STIPPLE);
+  }
+  glLineStipple(3, 0xDDDD);
+
+  glLineWidth(global_settings.GetEdgesSize());
+
 }

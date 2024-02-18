@@ -1,13 +1,12 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-// #include <GL/glu.h>
 
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
-//#include <GL/gl.h>
+#include <GL/gl.h>
 #include <GL/glu.h>
 #endif
 
@@ -27,22 +26,31 @@
 
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
-#include "../Model/model.cpp"
 #include "../Model/parser.h"
+#include "../Controller/contrl.cpp"
 
 class GLWidget : public QOpenGLWidget {
   Q_OBJECT
 
  public:
+  using EdgesType = s21::GlobalSettingsContrl::EdgesType;
+  using VerticesDisplayMethod = s21::GlobalSettingsContrl::VerticesDisplayMethod;
+  using ProjectionType = s21::GlobalSettingsContrl::ProjectionType;
+
   GLWidget(QWidget *parent = nullptr);
   ~GLWidget();
 
   QString modelPath;
 
-  s21::PositionModelSettings* pos_settings = new s21::PositionModelSettings;
-  s21::Model* model =  new s21::Model;
-  s21::GlobalViewSettings& global_settings = s21::GlobalViewSettings::Instance();
+  s21::PosSettingsContrl* pos_settings = new s21::PosSettingsContrl;
+  s21::ModelContrl* model =  new s21::ModelContrl;
+  s21::GlobalSettingsContrl global_settings = s21::GlobalSettingsContrl();
   void initialize_model();
+
+private:
+  void set_proection_view();
+  void set_point_view();
+  void set_line_view();
 
 protected:
   void initializeGL(); 

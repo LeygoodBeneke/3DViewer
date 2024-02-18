@@ -27,6 +27,7 @@ set(PROJECT_SOURCES
         Model/parser.cpp
         Model/transformation.cpp
         Model/transformation.h
+        Controller/contrl.cpp
 )
 set(CMAKE_CXX_FLAGS
        "-lglut -lGL -lGLU"

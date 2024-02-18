@@ -60,24 +60,19 @@ public:
     double GetPosZ() {return _z_val;};
 
     double GetScale() {return _scale;};
-
-    int GetAxis() {return _axis;};
     
     void SetAngleX(double x) {
         _x_angle = x;
-        _axis = kX;
         Notify();
     };
 
     void SetAngleY(double y) {
         _y_angle = y;
-        _axis = kY;
         Notify();
     };
 
     void SetAngleZ(double z) {
         _z_angle = z;
-        _axis = kZ;
         Notify();
     };
 
@@ -110,15 +105,12 @@ private:
     double _z_angle;
 
     double _scale;
-    int _axis;
 };
 
 class Model : public Observer {
 public:
-    Model() {}; // нужно понять есть ли у структур дефолтный конструктор
+    Model() {};
     Model(s21::DataObj data, s21::Transform transform) : _data(data), _transform(transform) {};
-
-    // DrawModel();
 
     void ChangeMoveVals(PositionModelSettings* settings) {
         _transform.prev_angle_x = settings->GetAngleX();
@@ -130,7 +122,6 @@ public:
         _transform.prev_coor[2] = settings->GetPosZ();
 
         _transform.value = settings->GetScale();
-        _transform.axis = settings->GetAxis();
     }
 
     void Update() override {
@@ -152,7 +143,7 @@ private:
     s21::Transform _transform;
 };
 
-class GlobalViewSettings { //need to complite
+class GlobalViewSettings {
 public:
    static GlobalViewSettings& Instance() {
         static GlobalViewSettings _instance;
@@ -184,58 +175,43 @@ public:
 
 private:
     GlobalViewSettings() {
-      settings = new QSettings();
- QVariant bg = settings->value("background");
-  QVariant width = settings->value("width");
-  QVariant edges_t = settings->value("edges_t");
-  QVariant edges_color = settings->value("edges_color");
-  QVariant vetr_method = settings->value("vetr_method");
-  QVariant vertices_size = settings->value("vertices_size");
-  QVariant vertices_color = settings->value("vertices_color");
-  QVariant projection_type = settings->value("projection_type");
+        settings = new QSettings();
+        QVariant bg = settings->value("background");
+        QVariant width = settings->value("width");
+        QVariant edges_t = settings->value("edges_t");
+        QVariant edges_color = settings->value("edges_color");
+        QVariant vetr_method = settings->value("vetr_method");
+        QVariant vertices_size = settings->value("vertices_size");
+        QVariant vertices_color = settings->value("vertices_color");
+        QVariant projection_type = settings->value("projection_type");
 
-  if (bg.isValid()) {
-    // glWidget->set_background(bg.value<QColor>());
-    SetBackgroundColor(bg.value<QColor>());
-  }
-  if (width.isValid()) {
-    // glWidget->set_line_width(width.value<float>());
-    SetHigthSize(width.value<float>());
-    // ui->edges_thikness_slider->setValue(width.value<float>());
-  }
-  if (edges_t.isValid()) {
-    // glWidget->set_edges_type(edges_t.value<int>());
-    SetEdgesType(edges_t.value<int>());
-    // ui->edges_type_combobox->setCurrentIndex(edges_t.value<int>());
-  }
-  if (edges_color.isValid()) {
-    SetEdgeColor(edges_color.value<QColor>());
-  }
-  if (vetr_method.isValid()) {
-    SetVerticesDisplayMethod(vetr_method.value<int>());
-    // glWidget->set_vertices_method(vetr_method.value<int>());
-    // ui->vertices_display_method_combobox->setCurrentIndex(
-    //    vetr_method.value<int>());
-  }
-  if (vertices_size.isValid()) {
-    SetHigthSize(vertices_size.value<float>());
-    //glWidget->set_vertices_size(vertices_size.value<float>());
-    //ui->vertices_size_slider->setValue(vertices_size.value<float>());
-  }
-  if (vertices_color.isValid()) {
-    SetHigthColor(vertices_color.value<QColor>());
-    //glWidget->set_vertices_color(vertices_color.value<QColor>());
-  }
-  if (projection_type.isValid()) {
-    SetProectionType(projection_type.value<int>());
-    //glWidget->set_projection_type(projection_type.value<int>());
-    //ui->projection_type_combobox->setCurrentIndex(projection_type.value<int>());
-  }
+        if (bg.isValid()) {
+            SetBackgroundColor(bg.value<QColor>());
+        }
+        if (width.isValid()) {
+            SetHigthSize(width.value<float>());
+        }
+        if (edges_t.isValid()) {
+            SetEdgesType(edges_t.value<int>());
+        }
+        if (edges_color.isValid()) {
+            SetEdgeColor(edges_color.value<QColor>());
+        }
+        if (vetr_method.isValid()) {
+            SetVerticesDisplayMethod(vetr_method.value<int>());
+        }
+        if (vertices_size.isValid()) {
+            SetHigthSize(vertices_size.value<float>());
+        }
+        if (vertices_color.isValid()) {
+            SetHigthColor(vertices_color.value<QColor>());
+        }
+        if (projection_type.isValid()) {
+            SetProectionType(projection_type.value<int>());
+        }
     };
 
     ~GlobalViewSettings() {
-
-
       settings->setValue("background", GetBackgroundColor());
       settings->setValue("width", GetHigthSize());
       settings->setValue("edges_t", GetEdgesType());
