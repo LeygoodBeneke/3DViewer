@@ -3,7 +3,7 @@
 
 TEST(Parser, Subtest_1) {
 
-  std:: string file_path = "Tests/data/cube.obj";
+  std:: string file_path = "Tests/data/cube.txt";
 
   s21::ReadOne* read = new s21::ReadOne();
   s21::ReadTwo* read2 = new s21::ReadTwo();
