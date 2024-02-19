@@ -23,7 +23,7 @@ struct Transform {
   std::array<double, 3> prev_coor = {};
 };
 
-enum Axis {kX, kY, kZ};
+enum Axis { kX, kY, kZ };
 
 }  // namespace s21
 

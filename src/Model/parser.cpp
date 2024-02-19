@@ -137,5 +137,4 @@ bool Parser::ReadFile(std::string name_file, DataObj *data_model) {
 //   return flag;
 // }
 
-
 }  // namespace s21

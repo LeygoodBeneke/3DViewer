@@ -1,7 +1,6 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-
 #include <QColorDialog>
 #include <QDateTime>
 #include <QDebug>
@@ -12,14 +11,15 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QSettings>
-#include <QTimer>
 #include <QString>
+#include <QTimer>
 #include <QVector>
+
 #include "../Model/third_party/QtGifImage/include/gifimage/qgifimage.h"
 // #include <QColor>
 
-
 #include <QMainWindow>
+
 #include "glwidget.h"
 
 QT_BEGIN_NAMESPACE
@@ -40,7 +40,8 @@ class Viewer : public QMainWindow {
   // void change_vertices_color();
 
  private:
-  s21::GlobalViewSettings& global_settings = s21::GlobalViewSettings::Instance();
+  s21::GlobalViewSettings &global_settings =
+      s21::GlobalViewSettings::Instance();
   Ui::Viewer *ui;
   QSettings *settings;
   GLWidget *glWidget;
@@ -49,7 +50,6 @@ class Viewer : public QMainWindow {
   QGifImage *gif;
   int counter;
 
- 
  public slots:
   void load_settings();
   void save_settings();

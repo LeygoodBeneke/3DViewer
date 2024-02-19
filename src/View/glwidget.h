@@ -1,7 +1,6 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -19,41 +18,42 @@
 #include <QImage>
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QSettings>
-#include <QTimer>
-#include <QString>
-#include <QVector>
-
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
-#include "../Model/parser.h"
+#include <QSettings>
+#include <QString>
+#include <QTimer>
+#include <QVector>
+
 #include "../Controller/contrl.cpp"
+#include "../Model/parser.h"
 
 class GLWidget : public QOpenGLWidget {
   Q_OBJECT
 
  public:
   using EdgesType = s21::GlobalSettingsContrl::EdgesType;
-  using VerticesDisplayMethod = s21::GlobalSettingsContrl::VerticesDisplayMethod;
+  using VerticesDisplayMethod =
+      s21::GlobalSettingsContrl::VerticesDisplayMethod;
   using ProjectionType = s21::GlobalSettingsContrl::ProjectionType;
 
-  GLWidget(QWidget *parent = nullptr);
+  GLWidget(QWidget* parent = nullptr);
   ~GLWidget();
 
   QString modelPath;
 
   s21::PosSettingsContrl* pos_settings = new s21::PosSettingsContrl;
-  s21::ModelContrl* model =  new s21::ModelContrl;
+  s21::ModelContrl* model = new s21::ModelContrl;
   s21::GlobalSettingsContrl global_settings = s21::GlobalSettingsContrl();
   void initialize_model();
 
-private:
+ private:
   void set_proection_view();
   void set_point_view();
   void set_line_view();
 
-protected:
-  void initializeGL(); 
+ protected:
+  void initializeGL();
   void paintGL();
   void resizeGL(int w, int h);
 
@@ -69,7 +69,7 @@ protected:
   void on_rotation_x_spinbox_valueChanged(double arg1);
   void on_rotation_y_spinbox_valueChanged(double arg1);
   void on_rotation_z_spinbox_valueChanged(double arg1);
-  
+
   void on_position_x_spinbox_valueChanged(double arg1);
   void on_position_y_spinbox_valueChanged(double arg1);
   void on_position_z_spinbox_valueChanged(double arg1);
