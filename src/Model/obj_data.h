@@ -15,7 +15,7 @@ struct DataObj {
 };
 
 struct Transform {
-  double value = 0;
+  double value = 1;
   double prev_angle_x = 0;
   double prev_angle_y = 0;
   double prev_angle_z = 0;

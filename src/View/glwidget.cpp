@@ -112,7 +112,7 @@ void GLWidget::on_position_z_spinbox_valueChanged(double arg1) {
 }
 
 void GLWidget::on_model_scale_slider_valueChanged(int arg1) {
-  pos_settings->SetScale(arg1);
+  pos_settings->SetScale(arg1 * 0.1);
   update();
 }
 
