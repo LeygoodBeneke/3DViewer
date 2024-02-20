@@ -13,7 +13,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 COMPONENTS Widgets OpenGL OpenGLWidgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
-add_subdirectory(Model/third_party/QtGifImage)
+add_subdirectory(third_party/QtGifImage)
 
 set(PROJECT_SOURCES
         View/main.cpp
