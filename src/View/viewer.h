@@ -15,7 +15,7 @@
 #include <QTimer>
 #include <QVector>
 
-#include "../Model/third_party/QtGifImage/include/gifimage/qgifimage.h"
+#include "../third_party/QtGifImage/include/gifimage/qgifimage.h"
 // #include <QColor>
 
 #include <QMainWindow>
