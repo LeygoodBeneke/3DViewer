@@ -21,7 +21,7 @@ uninstall:
 	rm build/Viewer_2_0
 
 clean:
-	rm -rf build Docs s21_test *.tar *.user
+	rm -rf build Docs proj_test *.tar *.user
 
 dvi: Doxyfile
 	doxygen
@@ -31,11 +31,11 @@ dist:
 	tar -cf Viewer_2_0.tar build/Viewer_2_0 
 
 tests:
-	g++ Tests/*.cpp Model/parser.cpp Model/transformation.cpp -lgtest -o s21_test
-	./s21_test
+	g++ Tests/*.cpp Model/parser.cpp Model/transformation.cpp -lgtest -o proj_test
+	./proj_test
 
 valgrind: tests
-	valgrind --leak-check=full ./s21_test
+	valgrind --leak-check=full ./proj_test
 
 style_test:
 	find . -name "*.cpp" -or -name "*.h" | xargs clang-format -n
